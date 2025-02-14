@@ -59,6 +59,8 @@ def download_build(name, url):
         d.download_build(name, zippath, meth='requests')
     else:
         d.download_build(name, zippath, meth='urllib')
+    xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
+    xbmc.sleep(5000)
 
 def extract_build():
     if os.path.exists(zippath):
