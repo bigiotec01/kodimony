@@ -62,10 +62,11 @@ def download_build(name, url):
     else:
         d.download_build(name, zippath, meth='urllib')
         xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
-    xbmc.sleep(5000)
 
 def extract_build():
+    xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
     if os.path.exists(zippath):
+        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
         dp.create(addon_name, local_string(30034))  # Extracting files
         counter = 1
         with ZipFile(zippath, 'r') as z:
