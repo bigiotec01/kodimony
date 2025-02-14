@@ -55,11 +55,13 @@ def download_build(name, url):
         if not xbmc.getCondVisibility('System.HasAddon(script.module.requests)'):
             xbmc.executebuiltin('InstallAddon(script.module.requests)')
             dialog.ok(color2(name), color2(local_string(30033)))  # Installing Requests
+            xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
             return
         d.download_build(name, zippath, meth='requests')
+        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
     else:
         d.download_build(name, zippath, meth='urllib')
-    xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
+        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
     xbmc.sleep(5000)
 
 def extract_build():
