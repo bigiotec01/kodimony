@@ -29,23 +29,23 @@ def build_install(name, name2, version, url):
     
     download_build(name, url)
     save_backup_restore('backup')
-    # fresh_start()
+    fresh_start()
     extract_build()
-    # save_backup_restore('restore')
-    # clean_backups()
-    # setting_set('buildname', name2)
-    # setting_set('buildversion', version)
-    # setting_set('update_passed', 'false')
-    # setting_set('firstrun', 'true')
-    # enable_wizard()
-    # xbmcgui.Dialog().notification(addon_name, 'Terminando la instalación, ¡espere por favor!', addon_icon, 6000)
-    # if name2 == 'ELEMico':
-    #     dialog.ok(addon_name, local_string(30036))  # Install Complete
-    #     os._exit(1)
-    # else:
-    #     truncate_tables()
-    #     dialog.ok(addon_name, local_string(30036))  # Install Complete
-    #     os._exit(1)
+    save_backup_restore('restore')
+    clean_backups()
+    setting_set('buildname', name2)
+    setting_set('buildversion', version)
+    setting_set('update_passed', 'false')
+    setting_set('firstrun', 'true')
+    enable_wizard()
+    xbmcgui.Dialog().notification(addon_name, 'Terminando la instalación, ¡espere por favor!', addon_icon, 6000)
+    if name2 == 'ELEMico':
+        dialog.ok(addon_name, local_string(30036))  # Install Complete
+        os._exit(1)
+    else:
+        truncate_tables()
+        dialog.ok(addon_name, local_string(30036))  # Install Complete
+        os._exit(1)
 
 def download_build(name, url):
     if os.path.exists(zippath):
