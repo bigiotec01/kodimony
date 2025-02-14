@@ -29,7 +29,7 @@ def build_install(name, name2, version, url):
     
     download_build(name, url)
     save_backup_restore('backup')
-    fresh_start()
+    # fresh_start()
     extract_build()
     # save_backup_restore('restore')
     # clean_backups()
