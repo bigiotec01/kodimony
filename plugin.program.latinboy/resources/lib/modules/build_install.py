@@ -29,7 +29,7 @@ def build_install(name, name2, version, url):
     
     download_build(name, url)
     save_backup_restore('backup')
-    fresh_start()
+    # fresh_start()
     extract_build()
     save_backup_restore('restore')
     clean_backups()
@@ -64,28 +64,57 @@ def download_build(name, url):
         xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
 
 def extract_build():
-    xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
-    if os.path.exists(zippath):
-        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
-        dp.create(addon_name, local_string(30034))  # Extracting files
-        counter = 1
+    xbmc.log(f'[DEBUG][EXTRACT] Iniciando extracción del build...', xbmc.LOGINFO)
+    xbmc.log(f'[DEBUG][EXTRACT] Ruta del ZIP: {zippath}', xbmc.LOGINFO)
+    xbmc.log(f'[DEBUG][EXTRACT] ¿Existe el ZIP?: {os.path.exists(zippath)}', xbmc.LOGINFO)
+
+    if not os.path.exists(zippath):
+        xbmc.log('[ERROR][EXTRACT] El archivo ZIP no existe.', xbmc.LOGINFO)
+        return False
+
+    dp.create(addon_name, local_string(30034))  # Extracting files
+    counter = 1
+
+    try:
         with ZipFile(zippath, 'r') as z:
             files = z.infolist()
+            total_files = len(files)
+            xbmc.log(f'[DEBUG][EXTRACT] Total de archivos en el ZIP: {total_files}', xbmc.LOGINFO)
+
             for file in files:
                 filename = file.filename
                 filename_path = os.path.join(home, filename)
-                progress_percentage = int(counter/len(files)*100)
-                try:
-                    if not os.path.exists(filename_path) or 'Addons33.db' in filename:
+                progress_percentage = int(counter / total_files * 100)
+
+                # Verificar si es un archivo o una carpeta
+                if filename.endswith('/'):
+                    xbmc.log(f'[DEBUG][EXTRACT] Creando directorio: {filename_path}', xbmc.LOGINFO)
+                    os.makedirs(filename_path, exist_ok=True)
+                else:
+                    xbmc.log(f'[DEBUG][EXTRACT] Extrayendo archivo: {filename} -> {filename_path}', xbmc.LOGINFO)
+                    try:
+                        # Extraer el archivo (sobrescribir si existe)
                         z.extract(file, home)
-                except Exception as e:
-                    xbmc.log(f'Error extracting {filename} - {e}', xbmc.LOGINFO)
+                    except Exception as e:
+                        xbmc.log(f'[ERROR][EXTRACT] Error extrayendo {filename}: {str(e)}', xbmc.LOGINFO)
+                        continue
+
                 dp.update(progress_percentage, f'{local_string(30034)}...\n{progress_percentage}%\n{filename}')
                 counter += 1
+
         dp.update(100, local_string(30035))  # Done Extracting
         xbmc.sleep(500)
         dp.close()
+
+        # Eliminar el archivo ZIP después de la extracción
         os.unlink(zippath)
+        xbmc.log('[DEBUG][EXTRACT] Extracción completada y ZIP eliminado.', xbmc.LOGINFO)
+        return True
+
+    except Exception as e:
+        xbmc.log(f'[ERROR][EXTRACT] Error general durante la extracción: {str(e)}', xbmc.LOGINFO)
+        dp.close()
+        return False
 
 def enable_wizard():
     try:

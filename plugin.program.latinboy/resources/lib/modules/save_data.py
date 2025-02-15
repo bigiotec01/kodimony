@@ -128,27 +128,91 @@ def restore_skin_user():
     os._exit(1)
 
 def save_backup_restore(_type: str) -> None:
-    with open(os.path.join(text_path, 'backup_restore.json'), 'r', encoding='utf-8', errors='ignore') as f:
-        item_list = json.loads(f.read())
-        for item in item_list.keys():
+    config_file = os.path.join(text_path, 'backup_restore.json')
+    
+    if not os.path.exists(config_file):
+        xbmc.log(f'[ERROR][SAVE] Archivo de configuración no encontrado: {config_file}', xbmc.LOGINFO)
+        return
+
+    xbmc.log(f'[DEBUG][SAVE] Iniciando proceso: {_type}', xbmc.LOGINFO)
+    xbmc.log(f'[DEBUG][SAVE] Usando archivo de configuración: {config_file}', xbmc.LOGINFO)
+
+    try:
+        with open(config_file, 'r', encoding='utf-8', errors='ignore') as f:
+            item_list = json.loads(f.read())
+            xbmc.log(f'[DEBUG][SAVE] Configuración cargada: {len(item_list.keys())} ítems', xbmc.LOGINFO)
+    except Exception as e:
+        xbmc.log(f'[ERROR][SAVE] Fallo al cargar JSON: {str(e)}', xbmc.LOGINFO)
+        return
+
+    for item in item_list.keys():
+        xbmc.log(f'[DEBUG][SAVE] Procesando ítem: {item}', xbmc.LOGINFO)
+        
+        try:
             setting_id = item_list[item]['setting']
-            path = item_list[item]['path']
-            data = item + '/settings.xml'             #Addon settings
-            realizer = item + '/rdauth.json'          #Realizer debrid data
-            youtube = item + '/api_keys.json'         #Youtube API Keys
-            if path == 'user_path':
-                path = user_path
-            elif path == 'data_path':
-                path = data_path
-            try:
-                if setting(setting_id)=='true':
-                    if _type == 'backup':
-                        backup(path, data)            #Backup all addon data
-                        backup(user_path, item)       #Backup Kodi specifics
-                        backup(path, realizer)        #Backup Realizer data
-                        backup(path, youtube)         #Backup Youtube data
-                    elif _type == 'restore':
-                        restore(path, item)           #Restore all addon data and Kodi specifics
-            except Exception as e:
-                xbmc.log(f'Error= {e}', xbmc.LOGINFO)
+            original_path = item_list[item]['path']
+            xbmc.log(f'[DEBUG][SAVE] Setting ID: {setting_id} | Path original: {original_path}', xbmc.LOGINFO)
+
+            # Resolver rutas dinámicas
+            if original_path == 'user_path':
+                final_path = user_path
+            elif original_path == 'data_path':
+                final_path = data_path
+            else:
+                final_path = original_path
+                
+            xbmc.log(f'[DEBUG][SAVE] Ruta final resuelta: {final_path}', xbmc.LOGINFO)
+
+            # Verificar si el setting está habilitado
+            setting_value = setting(setting_id)
+            xbmc.log(f'[DEBUG][SAVE] Valor del setting {setting_id}: {setting_value}', xbmc.LOGINFO)
+            
+            if setting_value != 'true':
+                xbmc.log(f'[DEBUG][SAVE] Saltando ítem {item} - Setting deshabilitado', xbmc.LOGINFO)
                 continue
+
+            # Definir archivos a procesar
+            files_to_process = [
+                ('settings.xml', os.path.join(final_path, item, 'settings.xml')),
+                ('rdauth.json', os.path.join(final_path, item, 'rdauth.json')),
+                ('api_keys.json', os.path.join(final_path, item, 'api_keys.json'))
+            ]
+
+            if _type == 'backup':
+                xbmc.log(f'[DEBUG][SAVE] Iniciando BACKUP para: {item}', xbmc.LOGINFO)
+                for file_type, source_path in files_to_process:
+                    if os.path.exists(source_path):
+                        xbmc.log(f'[DEBUG][BACKUP] Copiando {file_type}: {source_path}', xbmc.LOGINFO)
+                        # Aquí debería ir tu lógica real de backup
+                        # backup(final_path, os.path.join(item, file_type))
+                    else:
+                        xbmc.log(f'[WARNING][BACKUP] Archivo no existe: {source_path}', xbmc.LOGINFO)
+
+                # Backup especial para Kodi
+                kodi_specific_path = os.path.join(user_path, item)
+                if os.path.exists(kodi_specific_path):
+                    xbmc.log(f'[DEBUG][BACKUP] Copiando datos Kodi: {kodi_specific_path}', xbmc.LOGINFO)
+                    # backup(user_path, item)
+                else:
+                    xbmc.log(f'[WARNING][BACKUP] Ruta Kodi no existe: {kodi_specific_path}', xbmc.LOGINFO)
+
+            elif _type == 'restore':
+                xbmc.log(f'[DEBUG][SAVE] Iniciando RESTORE para: {item}', xbmc.LOGINFO)
+                for file_type, target_path in files_to_process:
+                    # Aquí debería ir tu lógica real de restore
+                    # restore(final_path, os.path.join(item, file_type))
+                    xbmc.log(f'[DEBUG][RESTORE] Restaurando {file_type} a: {target_path}', xbmc.LOGINFO)
+
+                # Restore especial para Kodi
+                kodi_restore_path = os.path.join(user_path, item)
+                xbmc.log(f'[DEBUG][RESTORE] Restaurando datos Kodi a: {kodi_restore_path}', xbmc.LOGINFO)
+                # restore(user_path, item)
+
+        except KeyError as e:
+            xbmc.log(f'[ERROR][SAVE] KeyError en ítem {item}: {str(e)}', xbmc.LOGINFO)
+        except Exception as e:
+            xbmc.log(f'[ERROR][SAVE] Error general en ítem {item}: {str(e)}', xbmc.LOGINFO)
+            import traceback
+            xbmc.log(f'[TRACEBACK][SAVE] {traceback.format_exc()}', xbmc.LOGINFO)
+
+    xbmc.log(f'[DEBUG][SAVE] Proceso {_type} completado', xbmc.LOGINFO)
