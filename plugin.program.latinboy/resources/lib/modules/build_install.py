@@ -50,23 +50,18 @@ def build_install(name, name2, version, url):
 def download_build(name, url):
     if os.path.exists(zippath):
         os.unlink(zippath)
-    
     d = Downloader(url)
-    
-    # Usar requests para todo excepto Dropbox
-    if not xbmc.getCondVisibility('System.HasAddon(script.module.requests)'):
-        xbmc.executebuiltin('InstallAddon(script.module.requests)')
-        dialog.ok(addon_name, 'Instalando módulo requests...')
-        xbmc.sleep(2000)
-    
-    try:
+    if 'dropbox' in url:
+        if not xbmc.getCondVisibility('System.HasAddon(script.module.requests)'):
+            xbmc.executebuiltin('InstallAddon(script.module.requests)')
+            dialog.ok(color2(name), color2(local_string(30033)))  # Installing Requests
+            xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
+            return
         d.download_build(name, zippath, meth='requests')
-        xbmc.log(f'[DEBUG] Build descargada en: {zippath}', xbmc.LOGINFO)
-    except Exception as e:
-        xbmc.log(f'[ERROR] Fallo en descarga: {str(e)}', xbmc.LOGINFO)
-        dialog.ok(addon_name, 'Error en la descarga, verifica el log')
-        return False
-    return True
+        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
+    else:
+        d.download_build(name, zippath, meth='urllib')
+        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
 
 def extract_build():
     xbmc.log(f'[DEBUG][EXTRACT] Iniciando extracción del build...', xbmc.LOGINFO)
