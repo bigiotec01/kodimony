@@ -40,71 +40,45 @@ class Downloader:
         except KeyError:
             return None
     
-    def download_build(self, name,zippath,meth='session', stream=True):
-        if meth in 'session':
-            response = self.get_session(decoding=False, stream=stream)
-        elif meth in 'requests':
-            response = self.get_requests(decoding=False, stream=stream)
-        elif meth in 'urllib':
-            response = self.get_urllib(decoding=False)
-        
-        length = self.get_length(response,meth=meth)
-        if length is not None:
-            length2 = int(int(length)/1000000)
-        else:
-            length2 = 'Unknown Size'
-        dp = xbmcgui.DialogProgress()
-        dp.create(name + ' - ' + str(length2) + ' MB', 'Descargando el Build....')
-        dp.update(0, 'Downloading your build...')
-        cancelled = False
-        tempzip = open(zippath, 'wb')
-        if length:
-            size = 0
-            if meth in ['session', 'requests']:
-                for chunk in response.iter_content(chunk_size=1000000):
-                    size += len(chunk)
-                    size2 = int(size/1000000)
-                    tempzip.write(chunk)
-                    perc = int(int(size)/int(length)*100)
-                    dp.update(perc, 'Descargando el Build....' + '\n' + str(size2) + '/' + str(length2) + 'MB')
-                    if dp.iscanceled():
-                        cancelled = True
-                        break
-            elif meth in 'urllib':
-                blocksize = 1000000
-                #blocksize = max(int(length)/512, 1000000)
-                while True:
-                    buf = response.read(blocksize)
-                    if not buf:
-                        break
-                    size += len(buf)
-                    size2 = int(size/1000000)
-                    perc = int(int(size)/int(length)*100)
-                    tempzip.write(buf)
-                    dp.update(perc, 'Descargando el Build....' + '\n' + str(size2) + '/' + str(length2) + 'MB')
-                    if dp.iscanceled():
-                        cancelled = True
-                        break
+    def download_build(self, name, dest, meth='requests', blocksize=1024*1024):
+        try:
+            if meth == 'requests':
+                import requests
+                r = requests.get(self.url, stream=True)
+                total_size = int(r.headers.get('content-length', 0))
                 
-        else:
-            dp.update(50, 'Descargando el Build....')
-            blocksize = 1000000
-            for chunk in response.iter_content(blocksize):
-                if dp.iscanceled():
-                    cancelled = True
-                    break
-                tempzip.write(chunk)
-        if cancelled:
-            xbmc.sleep(1000)
-            os.unlink(zippath)
-            dialog = xbmcgui.Dialog()
-            dialog.ok('Cancelled', 'Cancelando Descarga')
-            quit()
-        if length:
-            dp.update(100, 'Descarga del Build...¡Completada!' + '\n' + str(size2) + '/' + str(length2) + 'MB')
-        else:
-            dp.update(100, 'Descarga del Build...¡Completada!')
-        tempzip.close()
+                with open(dest, 'wb') as f:
+                    downloaded = 0
+                    for chunk in r.iter_content(chunk_size=blocksize):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            progress = int((downloaded / total_size) * 100) if total_size > 0 else 0
+                            dp.update(progress, f'Descargando {name}...')
+                
+            else:  # Usar urllib como fallback
+                import urllib.request
+                with urllib.request.urlopen(self.url) as response:
+                    total_size = int(response.headers.get('Content-Length', 0))
+                    downloaded = 0
+                    
+                    with open(dest, 'wb') as f:
+                        while True:
+                            chunk = response.read(blocksize)
+                            if not chunk:
+                                break
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            progress = int((downloaded / total_size) * 100) if total_size > 0 else 0
+                            dp.update(progress, f'Descargando {name}...')
+            
+            return True
+        
+        except Exception as e:
+            xbmc.log(f'[ERROR] Error en descarga: {str(e)}', xbmc.LOGINFO)
+            if os.path.exists(dest):
+                os.remove(dest)
+            return False
     
     def download_zip(self, dest):
         r = self.get_requests(decoding=False, stream=True)
