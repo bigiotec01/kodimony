@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.latinboy" name="Latin Boy Wizard" version="1.0.1" provider-name="Latin Boy">
+<addon id="plugin.program.latinboy" name="Latin Kodi Wizard" version="1.0.1" provider-name="Latin Kodi">
 	<requires>
 		<import addon="xbmc.python" version="3.0.1"/>
 		
@@ -9,9 +9,9 @@
 	</extension>
 	<extension point="xbmc.service" library="service.py" />
 	<extension point="xbmc.addon.metadata">
-		<summary lang="es_es">Latin Boy Wizard</summary>
-		<description lang="es_es">Kodi Build y mantenimiento de Kodi, donde se podra encontrar builds preparadas para su uso inmediato</description>
-		<disclaimer lang="en_GB">Este add-on no contiene contenido</disclaimer>
+		<summary lang="es_es">Latin Kodi Wizard</summary>
+		<description lang="es_es">Instalá y gestioná tu Build de Kodi de forma fácil y rápida. Incluye builds listas para usar, herramientas de mantenimiento, respaldo y restauración.</description>
+		<disclaimer lang="es_es">Este add-on no contiene ningún tipo de contenido multimedia.</disclaimer>
 		<language>es</language>
 		<platform>all</platform>
 		<license>GPL-2.0-or-later</license>

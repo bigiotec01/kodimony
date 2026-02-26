@@ -32,7 +32,7 @@ class Startup:
             
     def check_updates(self):
            if current_build == 'No Build Installed':
-               nobuild = dialog.yesnocustom(addon_name, 'Actualmente no hay un Build instalado.\n¿Le gustaría instalar uno ahora?', 'Mas Tarde')
+               nobuild = dialog.yesnocustom(addon_name, 'Actualmente no tenés ningún Build instalado.\n¿Te gustaría instalar uno ahora?', 'Más tarde')
                if nobuild == 1:
                    xbmc.executebuiltin(f'ActivateWindow(10001, "plugin://{addon_id}/?mode=1",return)')
                elif nobuild == 0:
@@ -118,35 +118,35 @@ class Startup:
         
     def save_menu(self):
         save_items = []
-        choices = ["Trakt & Debrid", "YouTube API Keys", "Favourites", "Advanced Settings", "Sources"]
+        choices = ["Trakt & Debrid", "Claves de API de YouTube", "Favoritos", "Configuración Avanzada", "Fuentes"]
         save_select = dialog.multiselect(addon_name + ' - ' + local_string(30052),choices, preselect=[])  # Select Save Items
         if save_select == None:
             return
         else:
             for index in save_select:
                 save_items.append(choices[index])
-                
+
         if 'Trakt & Debrid' in save_items:
             setting_set('savedata','true')
         else:
             setting_set('savedata','false')
-            
-        if 'YouTube API Keys' in save_items:
+
+        if 'Claves de API de YouTube' in save_items:
             setting_set('saveyoutube','true')
         else:
             setting_set('saveyoutube','false')
-            
-        if 'Favourites' in save_items:
+
+        if 'Favoritos' in save_items:
             setting_set('savefavs','true')
         else:
             setting_set('savefavs','false')
-            
-        if 'Advanced Settings' in save_items:
+
+        if 'Configuración Avanzada' in save_items:
             setting_set('saveadvanced','true')
         else:
             setting_set('saveadvanced','false')
-        
-        if 'Sources' in save_items:
+
+        if 'Fuentes' in save_items:
             setting_set('savesources', 'true')
         else:
             setting_set('savesources', 'false')
