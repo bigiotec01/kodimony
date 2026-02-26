@@ -24,7 +24,7 @@ def log(_text, _var):
 excludes = [p / 'addons/packages', p / 'addons/temp', p / 'userdata/Thumbnails', p / 'userdata/Database/Textures13.db', p / wizard_path]
 
 def from_keyboard():
-    kb = xbmc.Keyboard('', 'Enter Backup Name', False)
+    kb = xbmc.Keyboard('', 'Ingresá el nombre del respaldo', False)
     kb.doModal()
     if (kb.isConfirmed()):
         return kb.getText()
@@ -35,7 +35,7 @@ def backup_build():
     backup_path.mkdir(parents=True, exist_ok=True)
     k = from_keyboard()
     if k is False:
-        return xbmcgui.Dialog().ok('Backup', 'Copia de seguridad cancelada')
+        return xbmcgui.Dialog().ok('Respaldo', 'Respaldo cancelado')
     else:
         backup_name = backup_path / f'{k}.zip'
         
@@ -46,7 +46,7 @@ def backup_build():
     userdata_dirs, userdata_files = ([x for x in userdata.iterdir() if x.is_dir() and x not in excludes]), ([x for x in userdata.iterdir() if x.is_file() and x not in excludes])
     
     zip_file = ZipFile(backup_name, 'w')
-    xbmcgui.Dialog().notification(addon_name, 'Backup in progress, please wait!', addon_icon, 3000)
+    xbmcgui.Dialog().notification(addon_name, 'Respaldo en progreso, por favor esperá...', addon_icon, 3000)
     for x in sorted(addons_dirs):
         for z in sorted([y for y in x.rglob('*') if y not in excludes]):
             try:
@@ -85,7 +85,7 @@ def backup_build():
             xbmc.log(f'Unable to compress file {str(x)}: {e}', xbmc.LOGINFO)
     
     zip_file.close()
-    xbmcgui.Dialog().ok('Backup', 'Backup Complete')
+    xbmcgui.Dialog().ok('Respaldo', 'Respaldo completado exitosamente')
 
 excludes_freshstart = [addon_id, 'backups',  'Addons33.db', 'kodi.log']
 
@@ -115,7 +115,7 @@ def get_backup_folder():
 
 def reset_backup_folder():
     setting_set('backupfolder', 'special://home/backups')
-    xbmcgui.Dialog().ok('Backup Folder', 'Backup Folder Location\nSet to Default')
+    xbmcgui.Dialog().ok('Carpeta de Respaldos', 'Ubicación restablecida al valor por defecto')
 
 def restore_menu():
     build_backups = ([x for x in backup_path.iterdir() if x.is_file() and str(x).endswith('.zip')])
@@ -123,11 +123,11 @@ def restore_menu():
         add_dir(str(build.stem), str(build), 15, addon_icon, addon_fanart, str(build.name), isFolder=False)
 
 def restore_build(zippath):
-    restore = xbmcgui.Dialog().yesno('Restore', 'Are you sure you wish to wipe \ncurrent data and restore from backup?')
+    restore = xbmcgui.Dialog().yesno('Restaurar', '¿Estás seguro que querés borrar los datos actuales\ny restaurar desde el respaldo?')
     if restore is True:
         fresh_start_restore()
         if os.path.exists(zippath):
-            dp.create('Restore', local_string(30034))  # Extracting files
+            dp.create('Restaurar', local_string(30034))  # Extracting files
             counter = 1
             with ZipFile(zippath, 'r') as z:
                 files = z.infolist()
@@ -143,10 +143,10 @@ def restore_build(zippath):
                     dp.update(progress_percentage, f'{local_string(30034)}...\n{progress_percentage}%\n{filename}')
                     counter += 1
                 dp.update(100, local_string(30035))  # Done Extracting
-                xbmcgui.Dialog().ok('Restore', 'Restore Complete')
+                xbmcgui.Dialog().ok('Restaurar', 'Restauración completada exitosamente')
                 setting_set('firstrun', 'true')
                 os._exit(1)
         else:
-            xbmcgui.Dialog().ok('Restore', 'Backup Not Found')
+            xbmcgui.Dialog().ok('Restaurar', 'No se encontró el archivo de respaldo')
     else:
         return False

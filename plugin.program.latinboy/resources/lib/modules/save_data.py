@@ -67,7 +67,7 @@ def backup_gui_skin_user():
             shutil.copytree(os.path.join(data_path, skinsc), os.path.join(gui_save_user, skinsc), dirs_exist_ok=True)   #Backup skinshortcut settings
         except Exception as e:
             xbmc.log('Failed to backup %s. Reason: %s' % (os.path.join(gui_save_user, skinsc), e), xbmc.LOGINFO)
-    xbmcgui.Dialog().notification(addon_name, 'Backup Complete!', addon_icon, 6000)
+    xbmcgui.Dialog().notification(addon_name, '¡Respaldo completado!', addon_icon, 6000)
            
 def restore(path, file):
     if os.path.exists(os.path.join(packages, file)):
@@ -87,7 +87,7 @@ def restore_gui():
             xbmcvfs.copy(os.path.join(gui_save, gui_file), os.path.join(user_path, gui_file))   #Restore your backed up gui settings
         except Exception as e:
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(user_path, gui_file), e), xbmc.LOGINFO)
-    dialog.ok(addon_name, 'To save changes you now need to force close Kodi, Press OK to force close Kodi')
+    dialog.ok(addon_name, 'Para guardar los cambios es necesario cerrar Kodi. Presioná OK para forzar el cierre.')
     os._exit(1)
     
 def restore_skin():
@@ -101,7 +101,7 @@ def restore_skin():
             shutil.copytree(os.path.join(gui_save, skinsc), os.path.join(data_path, skinsc), dirs_exist_ok=True)   #Restore your backed up skinshortcuts settings
         except Exception as e:
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(data_path, skinsc), e), xbmc.LOGINFO)
-    dialog.ok(addon_name, 'To save changes you now need to force close Kodi, Press OK to force close Kodi')
+    dialog.ok(addon_name, 'Para guardar los cambios es necesario cerrar Kodi. Presioná OK para forzar el cierre.')
     os._exit(1)
 
 def restore_gui_user():
@@ -110,7 +110,7 @@ def restore_gui_user():
             xbmcvfs.copy(os.path.join(gui_save_user, gui_file), os.path.join(user_path, gui_file))   #Restore your backed up gui settings
         except Exception as e:
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(user_path, gui_file), e), xbmc.LOGINFO)
-    dialog.ok(addon_name, 'To save changes you now need to force close Kodi, Press OK to force close Kodi')
+    dialog.ok(addon_name, 'Para guardar los cambios es necesario cerrar Kodi. Presioná OK para forzar el cierre.')
     os._exit(1)
     
 def restore_skin_user():
@@ -124,7 +124,7 @@ def restore_skin_user():
             shutil.copytree(os.path.join(gui_save_user, skinsc), os.path.join(data_path, skinsc), dirs_exist_ok=True)   #Restore your backed up skinshortcuts settings
         except Exception as e:
             xbmc.log('Failed to restore %s. Reason: %s' % (os.path.join(data_path, skinsc), e), xbmc.LOGINFO)
-    dialog.ok(addon_name, 'To save changes you now need to force close Kodi, Press OK to force close Kodi')
+    dialog.ok(addon_name, 'Para guardar los cambios es necesario cerrar Kodi. Presioná OK para forzar el cierre.')
     os._exit(1)
 
 def save_backup_restore(_type: str) -> None:
