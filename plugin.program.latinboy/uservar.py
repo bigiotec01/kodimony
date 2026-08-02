@@ -1,7 +1,7 @@
 import xbmcaddon
 
 '''#####-----Build File-----#####'''
-buildfile = 'https://raw.githubusercontent.com/bigiotec01/kodimony/refs/heads/main/builds/builds.json'
+buildfile = 'https://cdn.jsdelivr.net/gh/bigiotec01/kodimony@main/builds/builds.json'
 
 '''#####-----Notifications File-----#####'''
 notify_url  = 'https://raw.githubusercontent.com/latinboykodi/latinboykodi.github.io/main/builds/notify.txt'
