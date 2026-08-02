@@ -145,7 +145,7 @@ def restore_build(zippath):
                 dp.update(100, local_string(30035))  # Done Extracting
                 xbmcgui.Dialog().ok('Restaurar', 'Restauración completada exitosamente')
                 setting_set('firstrun', 'true')
-                os._exit(1)
+                xbmc.executebuiltin('RestartApp')
         else:
             xbmcgui.Dialog().ok('Restaurar', 'No se encontró el archivo de respaldo')
     else:

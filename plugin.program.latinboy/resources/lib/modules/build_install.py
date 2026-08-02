@@ -41,11 +41,11 @@ def build_install(name, name2, version, url):
     xbmcgui.Dialog().notification(addon_name, 'Terminando la instalación, ¡espere por favor!', addon_icon, 6000)
     if name2 == 'ELEMico':
         dialog.ok(addon_name, local_string(30036))  # Install Complete
-        os._exit(1)
+        xbmc.executebuiltin('RestartApp')
     else:
         truncate_tables()
         dialog.ok(addon_name, local_string(30036))  # Install Complete
-        os._exit(1)
+        xbmc.executebuiltin('RestartApp')
 
 def download_build(name, url):
     if os.path.exists(zippath):

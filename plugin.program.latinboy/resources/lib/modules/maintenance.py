@@ -64,7 +64,7 @@ def advanced_settings_k20():
             os.unlink(advancedsettings_xml)
         xbmc.sleep(1000)
         dialog.ok(addon_name, local_string(30040))  # Advanced Settings Deleted
-        os._exit(1)
+        xbmc.executebuiltin('RestartApp')
     else:
         return
     if os.path.exists(advancedsettings_xml):
@@ -72,7 +72,7 @@ def advanced_settings_k20():
     shutil.copyfile(xml, advancedsettings_xml)
     xbmc.sleep(1000)
     dialog.ok(addon_name, local_string(30041))  # Advanced Settings Set
-    os._exit(1)
+    xbmc.executebuiltin('RestartApp')
 
 def advanced_settings_k21():
     selection = xbmcgui.Dialog().select(local_string(30038), ['1GB Devices (E.g. 1st-3rd gen Firestick/Firestick Lite)','1.5GB Devices (E.g. 4k Firestick)','2GB+ Devices (E.g. Shield Pro/Shield Tube/FireTV Cube)','Default (Reset to Default)',local_string(30039)])  # Select Ram Size, Delete
@@ -88,7 +88,7 @@ def advanced_settings_k21():
             os.unlink(advancedsettings_xml)
         xbmc.sleep(1000)
         dialog.ok(addon_name, local_string(30040))  # Advanced Settings Deleted
-        os._exit(1)
+        xbmc.executebuiltin('RestartApp')
     else:
         return
     if os.path.exists(advancedsettings_xml):
@@ -96,7 +96,7 @@ def advanced_settings_k21():
     shutil.copyfile(xml, advancedsettings_xml)
     xbmc.sleep(1000)
     dialog.ok(addon_name, local_string(30041))  # Advanced Settings Set
-    os._exit(1)
+    xbmc.executebuiltin('RestartApp')
 
 def fresh_start(standalone=False):
     if standalone:
@@ -157,7 +157,7 @@ def fresh_start(standalone=False):
         setting_set('buildversion', '0')
         truncate_tables()
         dialog.ok(addon_name, local_string(30045))  # Fresh Start Complete
-        os._exit(1)
+        xbmc.executebuiltin('RestartApp')
     else:
         return
 
