@@ -94,12 +94,12 @@ class Startup:
                print(f'Invalid Version Number. It must be numeric and no more than 3 decimals. Error Details - {e}')
                update = False
            
-           if update and setting('update_passed') != 'true':
+           if update and setting('update_passed') != 'true' and setting('update_dismissed_version') != str(version):
                update_available = xbmcgui.Dialog().yesnocustom(addon_name, local_string(30047) + ' ' + current_build +' ' + local_string(30048) + '\n' + local_string(30049) + ' ' + str(current_version) + '\n' + local_string(30050) + ' ' + str(version) + '\n' + local_string(30051), 'Remind Later')
                if update_available == 1:
                    xbmc.executebuiltin(f'ActivateWindow(10001, "plugin://{addon_id}/?mode=1",return)')
                elif update_available == 0:
-                   setting_set('update_passed', 'true')
+                   setting_set('update_dismissed_version', str(version))
                else:
                    return
            else:
