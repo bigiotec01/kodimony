@@ -7,6 +7,7 @@ import xbmcvfs
 import shutil
 import xml.etree.ElementTree as ET
 from .maintenance import clear_packages_startup
+from .build_install import build_install
 from uservar import buildfile, notify_url
 from resources.lib.modules import addonvar
 from .addonvar import setting, setting_set, addon_name, isBase64, headers, dialog, local_string, addon_id
@@ -46,6 +47,7 @@ class Startup:
            except:
                return
            version = 0.0
+           build_url = None
            try:
                try:
                    builds = json.loads(response)['builds']
@@ -56,12 +58,14 @@ class Startup:
                for build in builds:
                        if build.get('name') == current_build:
                            version = str(build.get('version'))
+                           build_url = build.get('url')
                            break
            except:
                builds = ET.fromstring(response)
                for tag in builds.findall('build'):
                        if tag.find('name').text == current_build:
                            version = str(tag.find('version').text)
+                           build_url = tag.find('url').text
                            break
            # 3 decimal fix
 
@@ -96,9 +100,12 @@ class Startup:
                update = False
            
            if update and setting('update_passed') != 'true' and setting('update_dismissed_version') != version_display:
+               if not build_url:
+                   xbmc.log(f"No se encontro 'url' para el build '{current_build}' en {buildfile}", level=xbmc.LOGERROR)
+                   return
                update_available = xbmcgui.Dialog().yesnocustom(addon_name, local_string(30047) + ' ' + current_build +' ' + local_string(30048) + '\n' + local_string(30049) + ' ' + str(current_version) + '\n' + local_string(30050) + ' ' + version_display + '\n' + local_string(30051), 'Remind Later')
                if update_available == 1:
-                   xbmc.executebuiltin(f'ActivateWindow(10001, "plugin://{addon_id}/?mode=1",return)')
+                   build_install(current_build, current_build, version_display, build_url, confirm=False)
                elif update_available == 0:
                    setting_set('update_dismissed_version', version_display)
                else:

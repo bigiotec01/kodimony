@@ -22,9 +22,9 @@ color1 = colors.color_text1
 color2 = colors.color_text2
     
 
-def build_install(name, name2, version, url):
+def build_install(name, name2, version, url, confirm=True):
     # Ready to install, Cancel, Continue
-    if not dialog.yesno(color2(name), color2(local_string(30028)), nolabel=local_string(30029), yeslabel=local_string(30030)):
+    if confirm and not dialog.yesno(color2(name), color2(local_string(30028)), nolabel=local_string(30029), yeslabel=local_string(30030)):
         return
     
     download_build(name, url)
