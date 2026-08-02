@@ -64,11 +64,12 @@ class Startup:
                            version = str(tag.find('version').text)
                            break
            # 3 decimal fix
-           
+
            current_bump = 0
            version_bump = 0
            update = False
-           
+           version_display = str(version)
+
            try:
                current = str(current_version)
                version = str(version)
@@ -94,12 +95,12 @@ class Startup:
                print(f'Invalid Version Number. It must be numeric and no more than 3 decimals. Error Details - {e}')
                update = False
            
-           if update and setting('update_passed') != 'true' and setting('update_dismissed_version') != str(version):
-               update_available = xbmcgui.Dialog().yesnocustom(addon_name, local_string(30047) + ' ' + current_build +' ' + local_string(30048) + '\n' + local_string(30049) + ' ' + str(current_version) + '\n' + local_string(30050) + ' ' + str(version) + '\n' + local_string(30051), 'Remind Later')
+           if update and setting('update_passed') != 'true' and setting('update_dismissed_version') != version_display:
+               update_available = xbmcgui.Dialog().yesnocustom(addon_name, local_string(30047) + ' ' + current_build +' ' + local_string(30048) + '\n' + local_string(30049) + ' ' + str(current_version) + '\n' + local_string(30050) + ' ' + version_display + '\n' + local_string(30051), 'Remind Later')
                if update_available == 1:
                    xbmc.executebuiltin(f'ActivateWindow(10001, "plugin://{addon_id}/?mode=1",return)')
                elif update_available == 0:
-                   setting_set('update_dismissed_version', str(version))
+                   setting_set('update_dismissed_version', version_display)
                else:
                    return
            else:
