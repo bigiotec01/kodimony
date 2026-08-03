@@ -27,7 +27,8 @@ def build_install(name, name2, version, url, confirm=True):
     if confirm and not dialog.yesno(color2(name), color2(local_string(30028)), nolabel=local_string(30029), yeslabel=local_string(30030)):
         return
     
-    download_build(name, url)
+    if not download_build(name, url):
+        return
     save_backup_restore('backup')
     fresh_start()
     extract_build()
@@ -56,12 +57,16 @@ def download_build(name, url):
             xbmc.executebuiltin('InstallAddon(script.module.requests)')
             dialog.ok(color2(name), color2(local_string(30033)))  # Installing Requests
             xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
-            return
+            return False
         d.download_build(name, zippath, meth='requests')
-        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
     else:
         d.download_build(name, zippath, meth='urllib')
-        xbmc.log(f'Build descargada en: {zippath}, existe: {os.path.exists(zippath)}', xbmc.LOGINFO)
+
+    exists = os.path.exists(zippath)
+    xbmc.log(f'Build descargada en: {zippath}, existe: {exists}', xbmc.LOGINFO)
+    if not exists:
+        dialog.ok(color2(name), color2(local_string(30066)))  # Download Failed
+    return exists
 
 def extract_build():
     xbmc.log(f'[DEBUG][EXTRACT] Iniciando extracción del build...', xbmc.LOGINFO)

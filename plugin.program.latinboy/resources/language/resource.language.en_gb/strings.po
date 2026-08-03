@@ -283,6 +283,10 @@ msgctxt "#30065"
 msgid ""
 msgstr ""
 
+msgctxt "#30066"
+msgid "No se pudo descargar el build. Verifica tu conexión e intenta nuevamente."
+msgstr ""
+
 msgctxt "#30950"
 msgid "[B]Ejecutar prueba de velocidad[/B]"
 msgstr ""
