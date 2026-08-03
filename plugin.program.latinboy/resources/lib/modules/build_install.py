@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 import time
 import sqlite3
+import xml.etree.ElementTree as ET
 from zipfile import ZipFile
 from .save_data import save_backup_restore
 from .maintenance import fresh_start, clean_backups, truncate_tables
@@ -32,6 +33,7 @@ def build_install(name, name2, version, url, confirm=True):
     save_backup_restore('backup')
     fresh_start()
     extract_build()
+    apply_skin()
     save_backup_restore('restore')
     clean_backups()
     setting_set('buildname', name2)
@@ -120,6 +122,31 @@ def extract_build():
         xbmc.log(f'[ERROR][EXTRACT] Error general durante la extracción: {str(e)}', xbmc.LOGINFO)
         dp.close()
         return False
+
+def apply_skin():
+    # Kodi sigue corriendo durante la extracción y guarda su configuración en
+    # memoria (la skin de fabrica) al hacer RestartApp, pisando el guisettings.xml
+    # recien extraido. Aplicar la skin por API deja el valor correcto en memoria
+    # para que ese guardado lo persista bien.
+    guisettings_path = os.path.join(home, 'userdata', 'guisettings.xml')
+    if not os.path.exists(guisettings_path):
+        return
+    try:
+        tree = ET.parse(guisettings_path)
+        node = tree.getroot().find(".//setting[@id='lookandfeel.skin']")
+        skin_id = node.text.strip() if node is not None and node.text else None
+        if not skin_id:
+            return
+        payload = json.dumps({
+            'jsonrpc': '2.0',
+            'method': 'Settings.SetSettingValue',
+            'params': {'setting': 'lookandfeel.skin', 'value': skin_id},
+            'id': 1,
+        })
+        xbmc.executeJSONRPC(payload)
+        xbmc.log(f'[DEBUG][SKIN] Skin aplicada via JSON-RPC: {skin_id}', xbmc.LOGINFO)
+    except Exception as e:
+        xbmc.log(f'[ERROR][SKIN] No se pudo aplicar la skin: {str(e)}', xbmc.LOGINFO)
 
 def enable_wizard():
     try:

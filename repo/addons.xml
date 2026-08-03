@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.program.latinboy" name="Latin Kodi Wizard" version="1.0.6" provider-name="Latin Kodi">
+<addon id="plugin.program.latinboy" name="Latin Kodi Wizard" version="1.0.7" provider-name="Latin Kodi">
 	<requires>
 		<import addon="xbmc.python" version="3.0.1"/>
 		<import addon="script.module.requests" version="2.22.0"/>
