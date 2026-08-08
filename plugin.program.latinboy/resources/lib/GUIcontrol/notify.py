@@ -5,9 +5,9 @@ from uservar import notify_url
 
 def get_notify() -> list:
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0'}
-    req = Request(notify_url, headers=headers)
-    response = urlopen(req).read().decode('utf-8')
     try:
+        req = Request(notify_url, headers=headers)
+        response = urlopen(req).read().decode('utf-8')
         split_response = response.split('|||')
         notify_version = int(split_response[0])
         message = split_response[1]

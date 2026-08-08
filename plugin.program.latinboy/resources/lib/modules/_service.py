@@ -227,9 +227,18 @@ class Startup:
             if setting('autoclearpackages')=='true':
                 clear_packages_startup()
             xbmc.sleep(2000)
-            self.notify_check()
+            try:
+                self.notify_check()
+            except Exception as e:
+                xbmc.log(f'{addon_name}: notify_check fallo - {e}', level=xbmc.LOGERROR)
             xbmc.sleep(3000)      #Delay Build Update Notification
-            self.check_updates()
+            try:
+                self.check_updates()
+            except Exception as e:
+                xbmc.log(f'{addon_name}: check_updates fallo - {e}', level=xbmc.LOGERROR)
             xbmc.sleep(1000)      #Delay Addon Update Notification
-            self.addon_update_check()
+            try:
+                self.addon_update_check()
+            except Exception as e:
+                xbmc.log(f'{addon_name}: addon_update_check fallo - {e}', level=xbmc.LOGERROR)
             
