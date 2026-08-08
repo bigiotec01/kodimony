@@ -8,9 +8,9 @@ import shutil
 import xml.etree.ElementTree as ET
 from .maintenance import clear_packages_startup
 from .build_install import build_install
-from uservar import buildfile, notify_url
+from uservar import buildfile, notify_url, addon_repo_url
 from resources.lib.modules import addonvar
-from .addonvar import setting, setting_set, addon_name, isBase64, headers, dialog, local_string, addon_id
+from .addonvar import setting, setting_set, addon_name, isBase64, headers, dialog, local_string, addon_id, addon_version
 
 current_build = setting('buildname')
 try:
@@ -113,6 +113,41 @@ class Startup:
            else:
                return
 
+    @staticmethod
+    def _version_tuple(v):
+        parts = []
+        for p in str(v).split('.'):
+            digits = ''.join(ch for ch in p if ch.isdigit())
+            parts.append(int(digits) if digits else 0)
+        return tuple(parts)
+
+    def addon_update_check(self):
+        try:
+            response = self.get_page(addon_repo_url)
+            tree = ET.fromstring(response)
+        except:
+            return
+        remote_version = None
+        for tag in tree.findall('addon'):
+            if tag.get('id') == addon_id:
+                remote_version = tag.get('version')
+                break
+        if not remote_version or setting('addon_update_dismissed_version') == remote_version:
+            return
+        try:
+            is_newer = self._version_tuple(remote_version) > self._version_tuple(addon_version)
+        except ValueError:
+            return
+        if not is_newer:
+            return
+        update_available = xbmcgui.Dialog().yesnocustom(addon_name, local_string(30047) + ' ' + addon_name + ' ' + local_string(30048) + '\n' + local_string(30049) + ' ' + str(addon_version) + '\n' + local_string(30050) + ' ' + str(remote_version) + '\n' + local_string(30051), 'Remind Later')
+        if update_available == 1:
+            xbmc.executebuiltin('UpdateAddonRepos')
+            xbmc.sleep(2000)
+            xbmc.executebuiltin(f'InstallAddon({addon_id})')
+        elif update_available == 0:
+            setting_set('addon_update_dismissed_version', remote_version)
+
     def file_check(self, bfile):
         if isBase64(bfile):
             return base64.b64decode(bfile).decode('utf8')
@@ -195,4 +230,6 @@ class Startup:
             self.notify_check()
             xbmc.sleep(3000)      #Delay Build Update Notification
             self.check_updates()
+            xbmc.sleep(1000)      #Delay Addon Update Notification
+            self.addon_update_check()
             
